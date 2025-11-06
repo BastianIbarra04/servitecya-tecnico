@@ -1,18 +1,47 @@
 {
-  "name": "servitecya-tecnico",
+  "name": "servitecya-app",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~54.0.22",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/datetimepicker": "8.4.4",
+    "@react-native-picker/picker": "2.11.1",
+    "@react-navigation/native": "^7.1.18",
+    "@react-navigation/stack": "^7.4.9",
+    "axios": "^1.12.2",
+    "burnt": "^0.13.0",
+    "date-fns": "^4.1.0",
+    "expo": "~54.0.12",
+    "expo-blur": "^15.0.7",
+    "expo-build-properties": "~1.0.9",
+    "expo-image-picker": "~17.0.8",
+    "expo-location": "~19.0.7",
+    "expo-router": "~6.0.10",
     "expo-status-bar": "~3.0.8",
+    "nativewind": "^2.0.11",
     "react": "19.1.0",
-    "react-native": "0.81.5"
+    "react-dom": "19.1.0",
+    "react-native": "0.81.4",
+    "react-native-dotenv": "^3.4.11",
+    "react-native-gesture-handler": "~2.28.0",
+    "react-native-google-places-autocomplete": "^2.5.7",
+    "react-native-maps": "1.20.1",
+    "react-native-picker-select": "^9.3.1",
+    "react-native-reanimated": "~4.1.1",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
+    "react-native-svg": "15.12.1",
+    "react-native-web": "^0.21.0"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "babel-preset-expo": "^54.0.3",
+    "tailwindcss": "3.3.2"
+  }
 }

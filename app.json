@@ -1,29 +1,43 @@
 {
   "expo": {
-    "name": "servitecya-tecnico",
-    "slug": "servitecya-tecnico",
+    "name": "servitecya-app",
+    "slug": "servitecya-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "scheme": "servitecya",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.servitecyaapp"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.servitecyaapp"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": ""
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "26.0"
+          }
+        }
+      ],
+      "expo-router"
+    ]
   }
 }
