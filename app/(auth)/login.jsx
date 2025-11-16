@@ -26,8 +26,9 @@ const handleLogin = async () => {
 
   setLoading(true);
   try {
-    const res = await axios.post(`${API_URL}/auth/login`, { email, password });
+    const res = await axios.post(`${API_URL}/authTechnician/login`, { email, password });
     const { user } = res.data || {};
+    console.log("Respuesta de login:", res.data);
 
     // Si tu API SIEMPRE devuelve 200 con un flag de éxito, valida aquí:
     if (!user) {
@@ -40,6 +41,7 @@ const handleLogin = async () => {
 
     await AsyncStorage.setItem('isLoggedIn', 'true');
     await AsyncStorage.setItem('userId', String(user.id));
+    await AsyncStorage.setItem("technicianId", String(user.technicianId));
     await login();
 
     router.replace('/home');

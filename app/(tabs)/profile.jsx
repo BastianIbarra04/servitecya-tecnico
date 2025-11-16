@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAuth} from '../../context/AuthContext';
 import { useRouter } from 'expo-router';
@@ -45,61 +45,103 @@ export default function Profile({setIsLoggedIn}) {
   };
 
   return (
-    <View className="flex-1 justify-around px-6 mt-16">
-      {/* Header */}
-      <View className="items-center">
-        <Image
-          source={require("../../assets/imgprofile.jpeg")}
-          style={{ width: 150, height: 150, borderRadius: 50}}
-        />
-        <Text className="text-3xl font-bold text-[#212121] mt-10">
-          {user?.name} {user?.lastname}
-        </Text>
-        <Text className="text-gray-500 text-xl w-full text-center">{user?.email}  </Text>
-      </View>
-
-      {/* Opciones */}
-      <View className="rounded-2xl border border-gray-300  overflow-hidden mb-6">
-        {/* Historial */}
-        <TouchableOpacity
-          className="flex-row items-center justify-between px-5 py-4 border-b border-gray-300"
-          onPress={() => router.push("/profile/history")}
-        >
-          <View className="flex-row items-center">
-            <View className="w-12 h-12 bg-orange-400 rounded-xl justify-center items-center mr-4">
-              <FontAwesome name="history" size={24} color="white" />
-            </View>
-            <Text className="text-lg text-[#212121] font-medium">
-              Historial de Servicios
-            </Text>
-          </View>
-          <FontAwesome name="chevron-right" size={20} color="#212121" />
-        </TouchableOpacity>
-        {/* Configuración */}
-        <TouchableOpacity
-          className="flex-row items-center justify-between px-5 py-4"
-          onPress={() => router.push("/profile/setting")}
-        >
-          <View className="flex-row items-center">
-            <View className="w-12 h-12 bg-orange-400 rounded-xl justify-center items-center mr-4">
-              <FontAwesome name="cog" size={24} color="white" />
-            </View>
-            <Text className="text-lg text-[#212121] font-medium">
-              Configuración
-            </Text>
-          </View>
-          <FontAwesome name="chevron-right" size={20} color="#212121" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Botón cerrar sesión */}
-      <TouchableOpacity
-        className="bg-[#FD963A] py-4 rounded-xl items-center justify-center shadow-md"
-        onPress={handleLogout}
+<SafeAreaView className="flex-1 bg-gray-50">
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        className="flex-1"
       >
-        <Text className="text-white text-lg font-semibold">Cerrar sesión</Text>
-      </TouchableOpacity>
-    </View>
+        {/* Header con gradiente */}
+        <View className="bg-gradient-to-b from-blue-600 to-blue-700 pt-8 pb-6 px-6">
+          <View className="items-center">
+            {/* Avatar con badge online */}
+            <View className="relative">
+              <Image
+                source={user?.profilePicture ? { uri: user.profilePicture } : require("../../assets/imgprofile.jpeg")}
+                style={{ width: 120, height: 120 }}
+                className="rounded-full border-4 border-white"
+              />
+            </View>
+            
+            {/* Información del usuario */}
+            <Text className="text-2xl font-bold text-black mt-4 text-center">
+              {user?.name} {user?.lastname}
+            </Text>
+            <Text className="text-black text-base mt-1 text-center mb-2">
+              {user?.email}
+            </Text>
+            
+          </View>
+        </View>
+
+
+        {/* Menú de opciones */}
+        <View className="px-6 mt-6">
+          <Text className="text-xl font-bold text-gray-900 mb-4">Mi Cuenta</Text>
+          
+          <View className="bg-white rounded-2xl shadow-sm overflow-hidden">
+              {/* Historial */}
+              <TouchableOpacity
+                className="flex-row items-center justify-between px-5 py-4 border-b border-gray-100"
+                onPress={() => router.push("/profile/history")}
+              >
+                <View className="flex-row items-center flex-1">
+                  <View className="w-12 h-12 bg-[#EEF2FF] rounded-xl justify-center items-center mr-4">
+                    <FontAwesome name="history" size={22} color="#4F46E5" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold text-gray-900">
+                      Historial de Servicios
+                    </Text>
+                    <Text className="text-gray-500 text-sm mt-1">
+                      Revisa tus servicios anteriores
+                    </Text>
+                  </View>
+                </View>
+                <FontAwesome name="chevron-right" size={16} color="#9CA3AF" />
+              </TouchableOpacity>
+
+              {/* Configuración */}
+              <TouchableOpacity
+                className="flex-row items-center justify-between px-5 py-4"
+                onPress={() => router.push("/profile/setting")}
+              >
+                <View className="flex-row items-center flex-1">
+                  <View className="w-12 h-12 bg-[#F0F9F6] rounded-xl justify-center items-center mr-4">
+                    <FontAwesome name="cog" size={22} color="#9CA3AF" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold text-gray-900">
+                      Configuración
+                    </Text>
+                    <Text className="text-gray-500 text-sm mt-1">
+                      Ajusta tus preferencias
+                    </Text>
+                  </View>
+                </View>
+                <FontAwesome name="chevron-right" size={16} color="#9CA3AF" />
+              </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* Botón cerrar sesión fijo */}
+      <View className="px-6 pb-8 pt-4 bg-gray-50 border-t border-gray-200">
+        <TouchableOpacity
+          className="bg-white border border-gray-300 py-4 rounded-xl items-center justify-center shadow-sm flex-row"
+          onPress={handleLogout}
+        >
+          <FontAwesome name="sign-out" size={18} color="#DC2626" />
+          <Text className="text-red-600 text-lg font-semibold ml-2">
+            Cerrar sesión
+          </Text>
+        </TouchableOpacity>
+        
+        {/* Versión de la app */}
+        <Text className="text-gray-400 text-center text-xs mt-4">
+          Versión 1.0.0
+        </Text>
+      </View>
+    </SafeAreaView>
   );
 }
 

@@ -16,6 +16,33 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)" options={{ headerShown: false, title: "" }} />
 
           {/* Pantalla fuera de tabs */}
+          <Stack.Screen 
+            name="profile/setting" 
+            options={{
+              title: 'Editar Perfil',
+              headerShown: false,
+              headerBackTitleVisible: false,
+            }}
+          />
+
+          <Stack.Screen 
+            name="request/[id]" 
+            options={{
+              title: 'Detalle de la Solicitud',
+              headerShown: false,
+              headerBackTitleVisible: false,
+            }}
+          />
+
+          <Stack.Screen 
+            name="request/[id]/offer" 
+            options={{
+              title: '',
+              headerShown: false,
+              headerBackTitleVisible: false,
+              
+            }}
+          />
         </Stack>
       </SafeAreaProvider>
       </LocationProvider>

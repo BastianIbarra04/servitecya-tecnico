@@ -105,9 +105,14 @@ export default function FilesScreen() {
       } else {
         Alert.alert('Error', 'No se pudo registrar el técnico');
       }
+
     } catch (error) {
+        if(error.response.status === 400){
+        Alert.alert("El correo ya está registrado.");
+      }else{
       console.error(error);
       Alert.alert('Error', 'Hubo un problema al registrar el técnico');
+      }
     } finally {
       setLoading(false);
     }
@@ -168,6 +173,7 @@ export default function FilesScreen() {
       />
 
       {/* Subida de imágenes */}
+      <Text className="text-lg py-3">Ingresa tus documentos de tu certificacion SEC</Text>
       <TouchableOpacity
         onPress={handleImageUpload}
         className="bg-gray-100 border border-dashed border-gray-400 rounded-lg h-24 items-center justify-center mb-4"
