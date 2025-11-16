@@ -132,13 +132,6 @@ export default function RequestsBySpecialty() {
                 <Text className="text-lg font-semibold text-gray-800">
                   {requests.length} solicitud{requests.length !== 1 ? 'es' : ''} encontrada{requests.length !== 1 ? 's' : ''}
                 </Text>
-                <TouchableOpacity 
-                  onPress={fetchNearbyRequests}
-                  className="flex-row items-center bg-orange-500 px-4 py-2 rounded-lg"
-                >
-                  <FontAwesome name="refresh" size={16} color="white" />
-                  <Text className="text-white font-medium ml-2">Actualizar</Text>
-                </TouchableOpacity>
               </View>
             )
           }

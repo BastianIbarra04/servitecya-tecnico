@@ -22,6 +22,16 @@ export default function _Layout() {
               <FontAwesome name="home" color={color} size={size} />
             ),
           }} />
+          <Tabs.Screen name="my-offers" options={{
+            headerShown: false,
+            title: 'Mis Ofertas',
+            tabBarLabel: 'Mis Ofertas',
+            tabBarActiveTintColor: '#fc7f20',
+            tabBarIcon: ({ color, size }) => (
+              <FontAwesome name="briefcase" color={color} size={size} />
+            ),
+          }} />
+
           <Tabs.Screen name="profile" options={{
             headerShown: false,
             title: 'Perfil',
@@ -31,6 +41,7 @@ export default function _Layout() {
               <FontAwesome name="user" color={color} size={size} />
             ),
           }} />
+
 
         </Tabs>
 } 

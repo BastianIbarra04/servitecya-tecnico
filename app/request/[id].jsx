@@ -182,7 +182,9 @@ export default function Request() {
         className="px-6 pt-4 bg-white border-t border-gray-200"
       >
         {hasOffer ? (
-          <View className="bg-gray-100 p-5 rounded-2xl items-center border border-gray-300">
+          <TouchableOpacity className="bg-gray-100 p-5 rounded-2xl items-center border border-gray-300"
+          
+          >
             <View className="flex-row items-center">
               <FontAwesome name="check-circle" size={20} color="#10B981" />
               <Text className="text-gray-700 font-bold text-lg ml-2">Oferta Enviada</Text>
@@ -190,7 +192,7 @@ export default function Request() {
             <Text className="text-gray-500 text-sm mt-1">
               Esperando respuesta del cliente
             </Text>
-          </View>
+          </TouchableOpacity>
         ) : (
           <TouchableOpacity
             className="bg-blue-500 p-5 rounded-2xl items-center shadow-lg"

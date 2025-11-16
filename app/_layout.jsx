@@ -43,6 +43,16 @@ export default function RootLayout() {
               
             }}
           />
+
+          <Stack.Screen 
+            name="offer-detail/[offerId]" 
+            options={{
+              title: '',
+              headerShown: false,
+              headerBackTitleVisible: false,
+              
+            }}
+          />
         </Stack>
       </SafeAreaProvider>
       </LocationProvider>
