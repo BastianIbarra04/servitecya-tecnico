@@ -53,6 +53,25 @@ export default function RootLayout() {
               
             }}
           />
+
+          <Stack.Screen 
+            name="chat/[offerId]" 
+            options={{
+              title: '',
+              headerShown: false,
+              headerBackTitleVisible: false,
+              
+            }}
+          />
+
+          <Stack.Screen 
+            name="service-management/[serviceRequestId]" 
+            options={{
+              title: '',
+              headerShown: false,
+              headerBackTitleVisible: false,
+            }}
+          />
         </Stack>
       </SafeAreaProvider>
       </LocationProvider>
