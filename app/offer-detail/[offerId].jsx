@@ -123,33 +123,6 @@ const loadAddressInBackground = async (offerData) => {
     );
   };
 
-  const handleCallClient = () => {
-    const phoneNumber = offer.serviceRequest?.user?.phone;
-    if (!phoneNumber) {
-      Alert.alert('Error', 'No hay número de teléfono disponible');
-      return;
-    }
-
-    Alert.alert(
-      'Llamar al cliente',
-      `¿Quieres llamar a ${offer.serviceRequest.user.name}?`,
-      [
-        {
-          text: 'Llamar',
-          onPress: () => {
-            const phoneUrl = `tel:${phoneNumber}`;
-            Linking.openURL(phoneUrl).catch(() => 
-              Alert.alert('Error', 'No se pudo realizar la llamada')
-            );
-          }
-        },
-        {
-          text: 'Cancelar',
-          style: 'cancel'
-        }
-      ]
-    );
-  };
 
   const handleOpenChat = () => {
     console.log('Navegando al chat con ofertaId:', offerId);
@@ -374,31 +347,27 @@ const loadAddressInBackground = async (offerData) => {
           <FontAwesome name="chevron-right" size={12} color="#9CA3AF" />
         </TouchableOpacity>
 
-        {/* Llamar */}
-        <TouchableOpacity 
-          className="flex-row items-center p-3 rounded-lg active:bg-gray-50"
-          onPress={handleCallClient}
-          disabled={!offer.serviceRequest?.user?.phone}
-        >
-          <View className={`w-10 h-10 rounded-full items-center justify-center mr-3 ${
-            offer.serviceRequest?.user?.phone ? 'bg-green-100' : 'bg-gray-100'
-          }`}>
-            <FontAwesome name="phone" size={14} color={offer.serviceRequest?.user?.phone ? "#10B981" : "#9CA3AF"} />
-          </View>
-          <View className="flex-1">
-            <Text className={`font-medium ${offer.serviceRequest?.user?.phone ? 'text-gray-900' : 'text-gray-400'}`}>
-              Llamar al cliente
-            </Text>
-            <Text className="text-gray-500 text-xs">
-              {offer.serviceRequest?.user?.phone ? 'Contactar por teléfono' : 'Teléfono no disponible'}
-            </Text>
-          </View>
-          <FontAwesome name="chevron-right" size={12} color="#9CA3AF" />
-        </TouchableOpacity>
-      </>
-    )}
+        {/* Completar servicio */}
+          <TouchableOpacity 
+            className="flex-row items-center p-3 rounded-lg active:bg-gray-50"
+            onPress={() => router.push(`/service-management/${offer.serviceRequest?.id}?offerId=${offer.id}&technicianId=${technicianId}`)}
+          >
+            <View className="w-10 h-10 bg-green-100 rounded-full items-center justify-center mr-3">
+              <FontAwesome name="check-circle" size={16} color="#10B981" />
+            </View>
+            <View className="flex-1">
+              <Text className="font-medium text-gray-900">
+                Completar servicio
+              </Text>
+              <Text className="text-gray-500 text-xs">
+                Marcar como finalizado
+              </Text>
+            </View>
+            <FontAwesome name="chevron-right" size={12} color="#9CA3AF" />
+          </TouchableOpacity>
+              </>
+            )}
 
-    {/* Estado Rechazado - Mensaje informativo */}
     {offer.status === 'REJECTED' && (
       <View className="p-3 rounded-lg bg-gray-50 border border-gray-200">
         <Text className="text-gray-500 text-sm text-center">

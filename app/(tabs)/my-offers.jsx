@@ -115,7 +115,7 @@ export default function MyOffers() {
   const handleOfferPress = (offer) => {
     if (['ACCEPTED', 'IN_PROGRESS'].includes(offer.status)) {
       // Navegar a gestión de servicio activo
-      router.push(`/service-management/${offer.serviceRequestId}`);
+      router.push(`/offer-detail/${offer.id}`);
     } else {
       // Navegar a vista normal de oferta
       router.push(`/offer-detail/${offer.id}`);
