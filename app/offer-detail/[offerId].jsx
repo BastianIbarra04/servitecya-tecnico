@@ -7,7 +7,6 @@ import { API_URL } from '../../components/config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { getAddressFromCoords } from '../utils/geocoods.jsx';
 
 export default function TechnicianOfferDetail() {
@@ -84,43 +83,41 @@ const loadAddressInBackground = async (offerData) => {
 
     const { latitude, longitude } = offer.serviceRequest;
     
-    Alert.alert(
-      'Abrir Ubicación',
-      '¿Cómo quieres ver la ubicación del cliente?',
-      [
-        {
-          text: 'Google Maps',
-          onPress: () => {
-            const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-            Linking.openURL(url).catch(() => 
-              Alert.alert('Error', 'No se pudo abrir Google Maps')
-            );
-          }
-        },
-        {
-          text: 'Waze',
-          onPress: () => {
-            const url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
-            Linking.openURL(url).catch(() => 
-              Alert.alert('Error', 'No se pudo abrir Waze')
-            );
-          }
-        },
-        {
-          text: 'Apple Maps',
-          onPress: () => {
-            const url = `http://maps.apple.com/?q=${latitude},${longitude}`;
-            Linking.openURL(url).catch(() => 
-              Alert.alert('Error', 'No se pudo abrir Apple Maps')
-            );
-          }
-        },
-        {
-          text: 'Cancelar',
-          style: 'cancel'
+  Alert.alert(
+    'Abrir Ubicación',
+    '¿Cómo quieres ver la ubicación del cliente?',
+    [
+      {
+        text: 'Google Maps',
+        onPress: () => {
+          const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+          Linking.openURL(url).catch(() => 
+            Alert.alert('Error', 'No se pudo abrir Google Maps')
+          );
         }
-      ]
-    );
+      },
+      {
+        text: 'Waze',
+        onPress: () => {
+          const url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
+          Linking.openURL(url).catch(() => 
+            Alert.alert('Error', 'No se pudo abrir Waze')
+          );
+        }
+      },
+      {
+        text: 'Apple Maps',
+        onPress: () => {
+          const url = `http://maps.apple.com/?q=${latitude},${longitude}`;
+          Linking.openURL(url).catch(() => 
+            Alert.alert('Error', 'No se pudo abrir Apple Maps')
+          );
+        }
+      }
+    ],
+    { cancelable: true } // <- Permite cerrar el alert al tocar fuera (solo Android)
+  );
+
   };
 
 

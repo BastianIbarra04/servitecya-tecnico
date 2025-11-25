@@ -72,14 +72,6 @@ export default function RootLayout() {
               headerBackTitleVisible: false,
             }}
           />
-          <Stack.Screen 
-            name="service-management/complete-service/[serviceRequestId]" 
-            options={{
-              title: '',
-              headerShown: false,
-              headerBackTitleVisible: false,
-            }}
-          />
         </Stack>
       </SafeAreaProvider>
       </LocationProvider>

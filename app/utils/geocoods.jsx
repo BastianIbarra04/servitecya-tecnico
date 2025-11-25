@@ -1,34 +1,41 @@
 // utils/geocoding.js
-export const getAddressFromCoords = async (lat, lng) => {
-  try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
-    );
-    
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    
-    const data = await response.json();
-    if (data && data.address) {
+const getAddressFromCoords = async (lat, lng, retries = 2) => {
+  const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+
+  const fetchWithTimeout = (url, timeout = 10000) =>
+    Promise.race([
+      fetch(url),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Request timed out')), timeout)
+      ),
+    ]);
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const response = await fetchWithTimeout(url);
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      const data = await response.json();
       const addr = data.address;
-      let addressParts = [];
-      
-      if (addr.road) addressParts.push(addr.road);
-      if (addr.house_number) addressParts.push(addr.house_number);
-      if (addr.suburb && !addressParts.includes(addr.suburb)) addressParts.push(addr.suburb);
-      if (addr.city || addr.town || addr.village) {
-        const city = addr.city || addr.town || addr.village;
-        if (!addressParts.includes(city)) addressParts.push(city);
+      if (!addr) return "Ubicación seleccionada";
+
+      const parts = [
+        addr.road,
+        addr.house_number,
+        addr.suburb,
+        addr.city || addr.town || addr.village,
+      ].filter(Boolean);
+
+      return parts.join(', ');
+    } catch (error) {
+      if (attempt < retries) {
+        console.warn(`Intento ${attempt + 1} fallido, reintentando...`);
+        await new Promise(r => setTimeout(r, 1000)); // espera 1s antes de reintentar
+      } else {
+        return `📍 ${lat?.toFixed(4) || 'N/A'}, ${lng?.toFixed(4) || 'N/A'}`;
       }
-      
-      const finalAddress = addressParts.join(', ');
-      return finalAddress;
     }
-    
-    return "Ubicación seleccionada";
-  } catch (error) {
-    console.error("❌ Error in getAddressFromCoords:", error);
-    return `📍 ${lat?.toFixed(4) || 'N/A'}, ${lng?.toFixed(4) || 'N/A'}`;
   }
 };
+
+export default getAddressFromCoords;

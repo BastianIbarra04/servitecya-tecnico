@@ -41,7 +41,6 @@ export default function Profile({setIsLoggedIn}) {
 
   const handleLogout = async () => {
     await logout(); // 👈 borra AsyncStorage y cambia el estado global
-    router.replace('/login'); // 👈 navega al login
   };
 
   return (

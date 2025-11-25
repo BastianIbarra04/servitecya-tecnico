@@ -3,18 +3,18 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator,
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import {useAuth} from '../../context/AuthContext';
 import { API_URL } from '../../components/config/api.js';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function Login() {
+export default function Login({ login }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isFocused, setIsFocused] = useState({ email: false, password: false });
   
   const router = useRouter();
-  const { login } = useAuth(); // 👈 usamos el método login del contexto
-
+  const insets = useSafeAreaInsets();
   const handleRegister = () => {
     router.replace('/register'); // 👈 redirige a la pantalla de registro
   };
@@ -29,9 +29,6 @@ const handleLogin = async () => {
   try {
     const res = await axios.post(`${API_URL}/authTechnician/login`, { email, password });
     const { user } = res.data || {};
-    console.log("Respuesta de login:", res.data);
-
-    // Si tu API SIEMPRE devuelve 200 con un flag de éxito, valida aquí:
     if (!user) {
       // fuerza el flujo de error para usar la misma lógica del catch
       const error = new Error('INVALID_CREDENTIALS');
@@ -74,9 +71,10 @@ const handleLogin = async () => {
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAwareScrollView 
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1 bg-white"
+      className="flex-1 bg-white "
+      contentContainerStyle={{ paddingTop: insets.top + 20, paddingBottom: 40 }}
     >
         <View className="flex-1 justify-center px-8 bg-white">
           {/* Header con logo */}
@@ -170,7 +168,7 @@ const handleLogin = async () => {
             </TouchableOpacity>
           </View>
 </View> 
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 }
 
