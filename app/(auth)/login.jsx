@@ -6,8 +6,10 @@ import { useRouter } from 'expo-router';
 import { API_URL } from '../../components/config/api.js';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '../../context/AuthContext';
 
-export default function Login({ login }) {
+export default function Login() {
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -41,8 +43,6 @@ const handleLogin = async () => {
     await AsyncStorage.setItem('userId', String(user.id));
     await AsyncStorage.setItem("technicianId", String(user.technicianId));
     await login();
-
-    router.replace('/home');
   } catch (error) {
     // Manejo claro por status
     if (axios.isAxiosError(error)) {
@@ -55,7 +55,7 @@ const handleLogin = async () => {
         Alert.alert('Error', msg || 'No se pudo iniciar sesión.');
       }
     } else {
-      Alert.alert('Error', 'Ocurrió un error inesperado.');
+      Alert.alert('Error', 'Ocurrió un error inesperado.'+error.message);
     }
   } finally {
     setLoading(false);
@@ -162,7 +162,7 @@ const handleLogin = async () => {
               onPress={handleRegister}
               className="items-center mt-2"
             >
-              <Text className="text-orange-500 font-medium text-sm">
+              <Text className="text-orange-500 font-medium text-md">
                 Regístrate aquí
               </Text>
             </TouchableOpacity>

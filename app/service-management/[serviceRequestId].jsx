@@ -50,8 +50,6 @@ export default function CompleteService() {
     try {
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
         quality: 0.8,
       });
 
@@ -71,8 +69,6 @@ export default function CompleteService() {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
         quality: 0.8,
         allowsMultipleSelection: true,
       });
@@ -161,7 +157,7 @@ export default function CompleteService() {
       await axios.post(`${API_URL}/service/complete`, {
         serviceRequestId: Number(serviceRequestId),
         technicianId: Number(technicianId),
-        evidencePhotos: Images,
+        images: Images,
         finalNotes: description.trim() || 'Servicio completado satisfactoriamente',
         offerId: Number(offerId)
       });

@@ -62,10 +62,10 @@ export default function Profile({setIsLoggedIn}) {
             </View>
             
             {/* Información del usuario */}
-            <Text className="text-2xl font-bold text-black mt-4 text-center">
+            <Text className="text-2xl font-medium text-black mt-4 text-center">
               {user?.name} {user?.lastname}
             </Text>
-            <Text className="text-black text-base mt-1 text-center mb-2">
+            <Text className="text-black text-lg font-medium mt-1 text-center mb-2">
               {user?.email}
             </Text>
             
@@ -74,7 +74,7 @@ export default function Profile({setIsLoggedIn}) {
 
 
         {/* Menú de opciones */}
-        <View className="px-6 mt-6">
+        <View className="px-6 mt-3">
           <Text className="text-xl font-bold text-gray-900 mb-4">Mi Cuenta</Text>
           
           <View className="bg-white rounded-2xl shadow-sm overflow-hidden">

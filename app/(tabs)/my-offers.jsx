@@ -158,7 +158,7 @@ export default function MyOffers() {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
         <ActivityIndicator size="large" color="#3B82F6" />
-        <Text className="text-gray-500 mt-4 text-lg">Cargando ofertas...</Text>
+        <Text className="text-gray-500 mt-4 text-lg font-bold">Cargando ofertas...</Text>
       </View>
     );
   }
@@ -245,7 +245,7 @@ export default function MyOffers() {
                 </Text>
                 <View className="flex-row items-center mt-1">
                   <FontAwesome name="user" size={12} color="#6B7280" />
-                  <Text className="text-gray-600 text-sm ml-1">
+                  <Text className="text-gray-600 text-sm ml-1 font-medium">
                     {item.serviceRequest?.user?.name || 'Cliente no especificado'}
                   </Text>
                 </View>
@@ -304,13 +304,13 @@ export default function MyOffers() {
 
             {/* Información adicional */}
             <View className="flex-row justify-between items-center">
-              <Text className="text-gray-400 text-xs">
+              <Text className="text-gray-400 text-xs font-medium">
                 Enviada el {new Date(item.createdAt).toLocaleDateString('es-CL')}
               </Text>
               
               {item.serviceRequest?.specialty?.name && (
                 <View className="bg-gray-100 px-2 py-1 rounded-full">
-                  <Text className="text-gray-600 text-xs">
+                  <Text className="text-gray-600 text-xs font-medium">
                     {item.serviceRequest.specialty.name}
                   </Text>
                 </View>

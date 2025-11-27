@@ -39,18 +39,9 @@ export default function InactiveScreen({logout}) {
         <View className="w-full max-w-sm space-y-4">
             <TouchableOpacity 
             className="bg-orange-500 py-4 rounded-xl shadow-sm"
-            onPress={() => {/* Aquí puedes agregar función de contacto */}}
-            >
-            <Text className="text-white text-center font-semibold text-base">
-                Contactar soporte
-            </Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-            className="py-4 rounded-xl border border-gray-300"
             onPress={logout}
             >
-            <Text className="text-gray-700 text-center font-medium text-base">
+            <Text className="text-white text-center font-medium text-base">
                 Cerrar sesión
             </Text>
             </TouchableOpacity>

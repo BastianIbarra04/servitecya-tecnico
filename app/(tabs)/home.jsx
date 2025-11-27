@@ -93,7 +93,7 @@ export default function RequestsBySpecialty() {
       {loading ? (
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#FF6600" />
-          <Text className="text-gray-500 mt-4 text-lg">Buscando solicitudes...</Text>
+          <Text className="text-gray-500 mt-4 text-lg font-bold">Buscando solicitudes...</Text>
         </View>
       ) : (
         <FlatList
@@ -188,7 +188,7 @@ export default function RequestsBySpecialty() {
                 {/* Información del cliente */}
                 <View className="flex-row items-center mb-3">
                   <FontAwesome name="user" size={14} color="#3B82F6" />
-                  <Text className="text-gray-600 ml-2 text-base">
+                  <Text className="text-gray-600 ml-2 text-base font-medium">
                     {item.user?.name || 'Cliente'}
                   </Text>
                 </View>
@@ -196,7 +196,7 @@ export default function RequestsBySpecialty() {
                 {/* Especialidad */}
                 <View className="flex-row items-center mb-3">
                   <FontAwesome name="wrench" size={14} color="#F59E0B" />
-                  <Text className="text-gray-600 ml-2 text-base">
+                  <Text className="text-gray-600 ml-2 text-base font-medium">
                     {item.specialty?.name || 'Especialidad no especificada'}
                   </Text>
                 </View>

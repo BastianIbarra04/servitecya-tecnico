@@ -15,11 +15,12 @@ export default function FilesScreen() {
   const [city, setCity] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
+  const [experience, setExperience] = useState('');
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
   // Especialidades que requieren SEC
-  const SEC_REQUIRED_SPECIALTIES = ['gasfitería', 'electricidad', 'gasfiteria', 'electricista'];
+  const SEC_REQUIRED_SPECIALTIES = ['gasfitería', 'electricidad', 'gasfiter', 'electricista'];
   
   const [requiresSEC, setRequiresSEC] = useState(false);
 
@@ -33,6 +34,7 @@ export default function FilesScreen() {
         const data = Object.fromEntries(values);
         setTechnicianData(data);
         
+        console.log('Loaded technician data:', data);
         // Verificar si alguna especialidad requiere SEC
         if (data.specialties) {
           const specialties = JSON.parse(data.specialties);
@@ -41,7 +43,9 @@ export default function FilesScreen() {
               specialty.name.toLowerCase().includes(secSpec.toLowerCase())
             )
           );
+          const experienceYears = specialties.map(s => s.experienceYears);
           setRequiresSEC(hasSECSpecialty);
+          setExperience(experienceYears[0]);
           console.log('Requires SEC:', hasSECSpecialty);
         }
       } catch (error) {
@@ -94,7 +98,8 @@ export default function FilesScreen() {
       formData.append('phone', technicianData.phone);
       formData.append('birthDate', technicianData.birthDate);
       formData.append('city', city);
-      formData.append('description', description || '');
+      formData.append('description', description);
+      formData.append('experience', experience);
 
       // Solo agregar SEC si es requerido
       if (requiresSEC) {
@@ -162,6 +167,9 @@ export default function FilesScreen() {
         }}
         showsVerticalScrollIndicator={false}
       >
+                    <TouchableOpacity onPress={() => router.back()} className="absolute top-4 left-1">
+                      <FontAwesome name="arrow-left" size={28} color="gray" />
+                    </TouchableOpacity>
         {/* Header */}
         <View className="items-center mb-6">
           <View className="w-16 h-16 bg-orange-500 rounded-2xl items-center justify-center mb-3 shadow-lg">
@@ -236,12 +244,12 @@ export default function FilesScreen() {
         {/* Subida de imágenes */}
         <View className="mb-4">
           <Text className="text-sm font-medium text-gray-700 mb-2">
-            Documentos de certificación *
+            Documentos *
           </Text>
           <Text className="text-xs text-gray-500 mb-3">
             {requiresSEC 
               ? "Sube tu certificado SEC y otros documentos que respalden tu experiencia"
-              : "Sube documentos que respalden tu experiencia y certificaciones"
+              : "Sube documentos que validen tu identidad profesional: certificado de antecedentes, cursos, títulos o experiencia comprobable."
             }
           </Text>
           
@@ -250,7 +258,7 @@ export default function FilesScreen() {
             className="border-2 border-dashed border-gray-300 rounded-xl p-6 items-center justify-center bg-gray-50"
           >
             <FontAwesome name="cloud-upload" size={32} color="#9CA3AF" />
-            <Text className="text-gray-500 mt-2 text-center">
+            <Text className="text-gray-500 font-medium mt-2 text-center">
               Toca para seleccionar archivos o fotos
             </Text>
             <Text className="text-gray-400 text-xs mt-1">

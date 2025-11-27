@@ -189,7 +189,7 @@ export default function Request() {
               <FontAwesome name="check-circle" size={20} color="#10B981" />
               <Text className="text-gray-700 font-bold text-lg ml-2">Oferta Enviada</Text>
             </View>
-            <Text className="text-gray-500 text-sm mt-1">
+            <Text className="text-gray-500 text-sm mt-1 font-medium">
               Esperando respuesta del cliente
             </Text>
           </TouchableOpacity>
@@ -205,7 +205,7 @@ export default function Request() {
               <FontAwesome name="paper-plane" size={20} color="white" />
               <Text className="text-white font-bold text-lg ml-2">Enviar Oferta</Text>
             </View>
-            <Text className="text-blue-100 text-sm mt-1">
+            <Text className="text-blue-100 text-sm mt-1 font-medium">
               Presiona para hacer tu propuesta
             </Text>
           </TouchableOpacity>

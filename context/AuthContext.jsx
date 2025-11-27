@@ -78,7 +78,7 @@ export function AuthProvider({ children }) {
           <FontAwesome name="spinner" size={48} color="#fb923c" spin />
         </View>
       ) : ( !isLoggedIn && !publicRoutes.includes(currentRouteName) ) ? (
-        <LoginScreen login={login} />  // renderizas el login aquí
+        <LoginScreen login={login} />
       ) : status === 'INACTIVE' ? (
         <InactiveScreen logout={logout} />
       ) : (
