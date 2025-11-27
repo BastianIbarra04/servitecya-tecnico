@@ -22,6 +22,7 @@
         "foregroundImage": "",
         "backgroundColor": "#ffffff"
       },
+      "softwareKeyboardLayoutMode": "resize",
       "edgeToEdgeEnabled": true,
       "package": "com.anonymous.servitecyaapp"
     },

@@ -115,7 +115,6 @@ export default function CompleteService() {
 
       return uploadRes.data.images;
     } catch (error) {
-      console.error('Error uploading images:', error);
       Alert.alert('Error', 'No se pudieron subir las imágenes');
       return null;
     } finally {

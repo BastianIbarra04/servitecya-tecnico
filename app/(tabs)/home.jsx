@@ -172,7 +172,9 @@ export default function RequestsBySpecialty() {
               <View className="p-4">
                 {/* Header de la tarjeta */}
                 <View className="flex-row justify-between items-start mb-3">
-                  <Text className="text-lg font-bold text-gray-900 flex-1 mr-2">
+                  <Text className="text-lg font-bold text-gray-900 flex-1 mr-2"
+                    numberOfLines={3}
+                  >
                     {item.description}
                   </Text>
                   {item.distancia && (

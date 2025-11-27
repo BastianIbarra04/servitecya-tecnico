@@ -29,32 +29,32 @@ export default function FilesScreen() {
     const loadData = async () => {
       try {
         const values = await AsyncStorage.multiGet([
-          'email', 'password', 'name', 'lastname', 'phone', 'birthDate', 'specialties'
+          'email', 'password', 'name', 'lastname', 'phone', 'birthDate', 'specialtyId', 'specialtyName', 'experienceYears'
         ]);
         const data = Object.fromEntries(values);
         setTechnicianData(data);
         
         console.log('Loaded technician data:', data);
         // Verificar si alguna especialidad requiere SEC
-        if (data.specialties) {
-          const specialties = JSON.parse(data.specialties);
-          const hasSECSpecialty = specialties.some(specialty => 
-            SEC_REQUIRED_SPECIALTIES.some(secSpec => 
-              specialty.name.toLowerCase().includes(secSpec.toLowerCase())
-            )
+        if (data.specialtyName) {
+          const hasSECSpecialty = SEC_REQUIRED_SPECIALTIES.some(secSpec =>
+            data.specialtyName.toLowerCase().includes(secSpec.toLowerCase())
           );
-          const experienceYears = specialties.map(s => s.experienceYears);
           setRequiresSEC(hasSECSpecialty);
-          setExperience(experienceYears[0]);
+          setExperience(data.experienceYears);
           console.log('Requires SEC:', hasSECSpecialty);
         }
       } catch (error) {
         console.error('Error loading data:', error);
+        setRequiresSEC(false);
       }
     };
     
     loadData();
   }, []);
+      
+    
+  
 
   // 🔹 Seleccionar imágenes o documentos
   const handleImageUpload = async () => {
@@ -88,44 +88,54 @@ export default function FilesScreen() {
     setLoading(true);
 
     try {
+      console.log('Submitting technician data:', {
+        ...technicianData,
+        city,
+        description,
+        secNumber: requiresSEC ? secNumber : 'N/A',
+        experience,
+        images,
+      });
       const formData = new FormData();
-      
-      // datos del técnico desde AsyncStorage
-      formData.append('email', technicianData.email);
-      formData.append('password', technicianData.password);
-      formData.append('name', technicianData.name);
-      formData.append('lastname', technicianData.lastname);
-      formData.append('phone', technicianData.phone);
-      formData.append('birthDate', technicianData.birthDate);
-      formData.append('city', city);
-      formData.append('description', description);
-      formData.append('experience', experience);
 
-      // Solo agregar SEC si es requerido
-      if (requiresSEC) {
-        formData.append('secNumber', secNumber);
-      }
-
-      // Agregar especialidades
-      if (technicianData.specialties) {
-        const specialties = JSON.parse(technicianData.specialties);
-        // Tomar la primera especialidad como principal (puedes ajustar esto)
-        if (specialties.length > 0) {
-          formData.append('specialtyId', specialties[0].id);
-        }
-      }
-
-      // imágenes
-      images.forEach((uri, index) => {
+      images.forEach((uri) => {
         const filename = uri.split('/').pop();
-        const match = /\.(\w+)$/.exec(filename);
-        const type = match ? `image/${match[1]}` : 'image/jpeg';
-        formData.append('files', { uri, name: filename, type });
+        const ext = filename.split('.').pop().toLowerCase();
+
+        const mime = ext === 'jpg' ? 'jpeg' : ext; // fix para jpg
+
+        formData.append('images', {
+          uri,
+          type: `image/${mime}`,
+          name: filename,
+        });
       });
 
-      const response = await axios.post(`${API_URL}/auth/registerTec`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const uploadRes = await axios.post(`${API_URL}/upload`, formData, {
+        headers: {
+          Accept: 'application/json',
+          "Content-Type": "multipart/form-data", // importante
+        }
       });
+
+      const uploadedImages = uploadRes.data.images;
+
+      const response = await axios.post(`${API_URL}/auth/registerTec`, {
+        email: technicianData.email,
+        password: technicianData.password,
+        name: technicianData.name,
+        lastname: technicianData.lastname,
+        phone: technicianData.phone,
+        birthDate: technicianData.birthDate,
+        city,
+        description,
+        experience,
+        secNumber: requiresSEC ? secNumber : undefined,
+        specialtyId: technicianData.specialtyId,
+        files: uploadedImages, // 🔥 viene de la subida
+      });
+
+
 
       if (response.status === 200) {
         Alert.alert('Éxito', 'Técnico registrado correctamente');

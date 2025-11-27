@@ -21,14 +21,13 @@ export default function TechnicianRegister() {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
   const [specialties, setSpecialties] = useState([]);
-  const [selectedSpecialties, setSelectedSpecialties] = useState([]);
-  const [showSpecialtyModal, setShowSpecialtyModal] = useState(false);
   const [selectedSpecialty, setSelectedSpecialty] = useState(null);
   const [experienceYears, setExperienceYears] = useState('');
+  const [showSpecialtyModal, setShowSpecialtyModal] = useState(false);
 
   const router = useRouter();
-  const { login } = useAuth();
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
@@ -44,27 +43,13 @@ export default function TechnicianRegister() {
     }
   };
 
-  const handleAddSpecialty = () => {
+  const handleSetSpecialty = () => {
     if (!selectedSpecialty || !experienceYears) {
-      Alert.alert('Error', 'Por favor selecciona una especialidad y los años de experiencia');
+      Alert.alert('Error', 'Selecciona una especialidad y años de experiencia');
       return;
     }
 
-    const newSpecialty = {
-      id: selectedSpecialty.id,
-      name: selectedSpecialty.name,
-      experienceYears: parseInt(experienceYears),
-      since: new Date(new Date().getFullYear() - parseInt(experienceYears), 0, 1)
-    };
-
-    setSelectedSpecialties(prev => [...prev, newSpecialty]);
-    setSelectedSpecialty(null);
-    setExperienceYears('');
     setShowSpecialtyModal(false);
-  };
-
-  const removeSpecialty = (id) => {
-    setSelectedSpecialties(prev => prev.filter(s => s.id !== id));
   };
 
   const handleRegister = async () => {
@@ -73,15 +58,17 @@ export default function TechnicianRegister() {
       return;
     }
 
-    if (selectedSpecialties.length === 0) {
-      Alert.alert('Error', 'Por favor agrega al menos una especialidad');
+    if (!selectedSpecialty || !experienceYears) {
+      Alert.alert('Error', 'Debes seleccionar UNA especialidad');
       return;
     }
 
     try {
       setLoading(true);
+
       
-      // Guardar datos en AsyncStorage para usar en el siguiente paso
+
+      // Guardar datos
       await AsyncStorage.multiSet([
         ['email', email],
         ['password', password],
@@ -89,11 +76,12 @@ export default function TechnicianRegister() {
         ['lastname', lastname],
         ['phone', phone],
         ['birthDate', birthDate.toISOString()],
-        ['specialties', JSON.stringify(selectedSpecialties)]
+        ['specialtyId', String(selectedSpecialty.id)],
+        ['specialtyName', selectedSpecialty.name],
+        ['experienceYears', String(experienceYears)],
       ]);
 
-      // Navegar a la pantalla de documentos
-      router.replace('/files');
+      router.push('/files');
     } catch (error) {
       console.error(error);
       Alert.alert('Error', 'Hubo un problema al guardar los datos.');
@@ -102,13 +90,7 @@ export default function TechnicianRegister() {
     }
   };
 
-  const goToLogin = () => {
-    router.replace('/login');
-  };
-
-  const availableSpecialties = specialties.filter(spec => 
-    !selectedSpecialties.find(selected => selected.id === spec.id)
-  );
+  const goToLogin = () => router.replace('/login');
 
   return (
     <KeyboardAvoidingView
@@ -116,41 +98,34 @@ export default function TechnicianRegister() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 40 }}
-      >
-        {/* Header */}
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         <View className="px-6 py-8">
-          <View className="flex-row items-center flex-1">
-            <TouchableOpacity 
-              className="p-2 mr-2"
-              onPress={goToLogin}
-            >
-              <FontAwesome name="chevron-left" size={16} color="#374151" />
-            </TouchableOpacity>
-          </View>
+          
+          {/* Volver */}
+          <TouchableOpacity className="p-2 mb-4" onPress={goToLogin}>
+            <FontAwesome name="chevron-left" size={18} color="#374151" />
+          </TouchableOpacity>
+
+          {/* Header */}
           <View className="items-center mb-8">
             <View className="bg-orange-100 w-16 h-16 rounded-full items-center justify-center mb-4">
               <FontAwesome name="wrench" size={24} color="#FF6600" />
             </View>
             <Text className="text-3xl font-bold text-gray-900 mb-2">Registro Técnico</Text>
-            <Text className="text-gray-500 text-center">
-              Completa tu perfil profesional
-            </Text>
+            <Text className="text-gray-500 text-center">Completa tu perfil profesional</Text>
           </View>
 
-          {/* Form Container */}
+          {/* Campos */}
           <View className="space-y-4">
-            
-            {/* Nombre y Apellido */}
+
+            {/* Nombre */}
             <View className="flex-row space-x-3">
               <View className="flex-1">
-                <Text className="text-gray-700 font-medium mb-2 text-sm">Nombre *</Text>
+                <Text className="text-gray-700 mb-2 text-sm">Nombre *</Text>
                 <View className="flex-row items-center bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3">
                   <FontAwesome name="user" size={16} color="#9CA3AF" />
                   <TextInput
-                    className="flex-1 ml-3 text-gray-900"
+                    className="flex-1 ml-3"
                     placeholder="Tu nombre"
                     placeholderTextColor="#9CA3AF"
                     value={name}
@@ -158,13 +133,14 @@ export default function TechnicianRegister() {
                   />
                 </View>
               </View>
-              
+
+              {/* Apellido */}
               <View className="flex-1">
-                <Text className="text-gray-700 font-medium mb-2 text-sm">Apellido *</Text>
+                <Text className="text-gray-700 mb-2 text-sm">Apellido *</Text>
                 <View className="flex-row items-center bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3">
                   <FontAwesome name="user" size={16} color="#9CA3AF" />
                   <TextInput
-                    className="flex-1 ml-3 text-gray-900"
+                    className="flex-1 ml-3"
                     placeholder="Tu apellido"
                     placeholderTextColor="#9CA3AF"
                     value={lastname}
@@ -174,30 +150,28 @@ export default function TechnicianRegister() {
               </View>
             </View>
 
-            {/* Fecha de Nacimiento */}
+            {/* Fecha Nacimiento */}
             <View>
-              <Text className="text-gray-700 font-medium mb-2 text-sm">Fecha de Nacimiento *</Text>
+              <Text className="text-gray-700 mb-2 text-sm">Fecha de Nacimiento *</Text>
               <TouchableOpacity
                 onPress={() => setShowPicker(true)}
                 className="flex-row items-center bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3"
               >
                 <FontAwesome name="calendar" size={16} color="#9CA3AF" />
-                <Text className={`ml-3 ${birthDate ? 'text-gray-900' : 'text-gray-400'}`}>
-                  {birthDate
-                    ? format(birthDate, "dd 'de' MMMM 'de' yyyy", { locale: es })
-                    : 'Selecciona tu fecha de nacimiento'}
+                <Text className={`ml-3  font-medium ${birthDate ? "text-gray-900" : "text-gray-400"}`}>
+                  {birthDate ? format(birthDate, "dd 'de' MMMM 'de' yyyy", { locale: es }) : "Selecciona tu fecha"}
                 </Text>
               </TouchableOpacity>
 
               {showPicker && (
                 <DateTimePicker
-                  value={birthDate || new Date(2000, 0, 1)}
-                  mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  maximumDate={new Date()}
-                  onChange={(event, selectedDate) => {
+                value={birthDate || new Date(2000, 0, 1)}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                maximumDate={new Date()}
+                  onChange={(e, date) => {
                     setShowPicker(false);
-                    if (selectedDate) setBirthDate(selectedDate);
+                    if (date) setBirthDate(date);
                   }}
                 />
               )}
@@ -205,12 +179,12 @@ export default function TechnicianRegister() {
 
             {/* Email */}
             <View>
-              <Text className="text-gray-700 font-medium mb-2 text-sm">Correo Electrónico *</Text>
+              <Text className="text-gray-700 mb-2 text-sm">Correo Electrónico *</Text>
               <View className="flex-row items-center bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3">
                 <FontAwesome name="envelope" size={16} color="#9CA3AF" />
                 <TextInput
-                  className="flex-1 ml-3 text-gray-900"
-                  placeholder="tu@email.com"
+                  className="flex-1 ml-3"
+                  placeholder="email@example.com"
                   placeholderTextColor="#9CA3AF"
                   keyboardType="email-address"
                   autoCapitalize="none"
@@ -222,12 +196,12 @@ export default function TechnicianRegister() {
 
             {/* Teléfono */}
             <View>
-              <Text className="text-gray-700 font-medium mb-2 text-sm">Teléfono *</Text>
+              <Text className="text-gray-700 mb-2 text-sm">Teléfono *</Text>
               <View className="flex-row items-center bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3">
                 <FontAwesome name="phone" size={16} color="#9CA3AF" />
-                <Text className="text-gray-500 ml-3">+56 9</Text>
+                <Text className="ml-3 text-gray-500">+56 9</Text>
                 <TextInput
-                  className="flex-1 ml-2 text-gray-900"
+                  className="flex-1 ml-2"
                   placeholder="1234 5678"
                   placeholderTextColor="#9CA3AF"
                   keyboardType="phone-pad"
@@ -240,7 +214,7 @@ export default function TechnicianRegister() {
 
             {/* Contraseña */}
             <View>
-              <Text className="text-gray-700 font-medium mb-2 text-sm">Contraseña *</Text>
+              <Text className="text-gray-700 mb-2 text-sm">Contraseña *</Text>
               <View className="flex-row items-center bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3">
                 <FontAwesome name="lock" size={16} color="#9CA3AF" />
                 <TextInput
@@ -252,149 +226,115 @@ export default function TechnicianRegister() {
                   onChangeText={setPassword}
                 />
                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                  <FontAwesome 
-                    name={showPassword ? "eye-slash" : "eye"} 
-                    size={16} 
-                    color="#9CA3AF"
-                  />
+                  <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={16} color="#9CA3AF" />
                 </TouchableOpacity>
               </View>
             </View>
 
-            {/* Especialidades */}
+            {/* Especialidad (solo una) */}
             <View className="bg-blue-50 rounded-2xl p-4 mt-4">
               <Text className="text-blue-800 font-semibold text-sm mb-3">
-                🔧 ESPECIALIDADES PROFESIONALES *
-              </Text>
-              
-              <Text className="text-gray-600 text-sm mb-3">
-                Agrega tus especialidades y años de experiencia
+                🔧 Especialidad Profesional *
               </Text>
 
-              {/* Especialidades seleccionadas */}
-              {selectedSpecialties.map((specialty) => (
-                <View key={specialty.id} className="bg-white rounded-xl p-3 mb-2 border border-blue-200 flex-row justify-between items-center">
-                  <View>
-                    <Text className="font-medium text-gray-800">{specialty.name}</Text>
-                    <Text className="text-sm text-gray-500">
-                      {specialty.experienceYears} año{specialty.experienceYears !== 1 ? 's' : ''} de experiencia
-                    </Text>
-                  </View>
-                  <TouchableOpacity 
-                    onPress={() => removeSpecialty(specialty.id)}
-                    className="p-2"
+              {selectedSpecialty ? (
+                <View className="bg-white p-4 rounded-xl border border-blue-200 mb-3">
+                  <Text className="text-gray-900 font-medium">{selectedSpecialty.name}</Text>
+                  <Text className="text-gray-500 text-sm">
+                    {experienceYears} año(s) de experiencia
+                  </Text>
+
+                  <TouchableOpacity
+                    className="mt-2 p-2"
+                    onPress={() => {
+                      setSelectedSpecialty(null);
+                      setExperienceYears('');
+                    }}
                   >
-                    <FontAwesome name="trash" size={16} color="#EF4444" />
+                    <Text className="text-red-600 font-medium">Eliminar selección</Text>
                   </TouchableOpacity>
                 </View>
-              ))}
+              ) : (
+                <TouchableOpacity
+                  className="border-2 border-dashed border-blue-300 rounded-2xl p-4 items-center"
+                  onPress={() => setShowSpecialtyModal(true)}
+                >
+                  <FontAwesome name="plus" size={20} color="#3B82F6" />
+                  <Text className="text-blue-600 font-medium mt-1">Seleccionar Especialidad</Text>
+                </TouchableOpacity>
+              )}
 
-              {/* Botón para agregar especialidad */}
-              <TouchableOpacity 
-                className="border-2 border-dashed border-blue-300 rounded-2xl p-4 items-center mt-2"
-                onPress={() => setShowSpecialtyModal(true)}
-              >
-                <FontAwesome name="plus" size={20} color="#3B82F6" />
-                <Text className="text-blue-600 font-medium mt-1">
-                  Agregar Especialidad
-                </Text>
-              </TouchableOpacity>
             </View>
+
           </View>
 
-          {/* Botón de Registro */}
+          {/* Botón Registrar */}
           <TouchableOpacity
-            style={{ marginBottom: 32 }}
             className={`w-full rounded-2xl py-4 mt-8 ${
-              loading || selectedSpecialties.length === 0 ? 'bg-orange-400' : 'bg-orange-500'
-            } shadow-lg`}
+              !selectedSpecialty ? 'bg-orange-300' : 'bg-orange-500'
+            }`}
+            disabled={!selectedSpecialty}
             onPress={handleRegister}
-            disabled={loading || selectedSpecialties.length === 0}
           >
-            <View className="flex-row items-center justify-center">
-              {loading && (
-                <FontAwesome name="spinner" size={20} color="white" />
-              )}
-              <Text className="text-white font-bold text-lg text-center ml-2">
-                {loading ? 'Procesando...' : 'Continuar'}
-              </Text>
-            </View>
+            <Text className="text-center text-white font-bold text-lg">
+              {loading ? 'Procesando...' : 'Continuar'}
+            </Text>
           </TouchableOpacity>
-
         </View>
       </ScrollView>
 
-      {/* Modal para agregar especialidad */}
-      <Modal
-        visible={showSpecialtyModal}
-        animationType="slide"
-        transparent={true}
-      >
+      {/* Modal Especialidad */}
+      <Modal visible={showSpecialtyModal} animationType="slide" transparent={true}>
         <View className="flex-1 justify-center items-center bg-black/50 px-6">
           <View className="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <Text className="text-xl font-bold text-gray-900 mb-4">
-              Agregar Especialidad
-            </Text>
-            
-            {/* Selector de especialidad */}
-            <View className="mb-4">
-              <Text className="text-sm font-medium text-gray-700 mb-2">
-                Especialidad *
-              </Text>
-              <ScrollView className="max-h-40">
-                {availableSpecialties.map(specialty => (
-                  <TouchableOpacity
-                    key={specialty.id}
-                    className={`p-3 rounded-xl mb-2 ${
-                      selectedSpecialty?.id === specialty.id 
-                        ? 'bg-orange-100 border border-orange-500' 
-                        : 'bg-gray-100 border border-gray-200'
-                    }`}
-                    onPress={() => setSelectedSpecialty(specialty)}
-                  >
-                    <Text className={`font-medium ${
-                      selectedSpecialty?.id === specialty.id 
-                        ? 'text-orange-700' 
-                        : 'text-gray-700'
-                    }`}>
-                      {specialty.name}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
 
-            {/* Años de experiencia */}
-            <View className="mb-6">
-              <Text className="text-sm font-medium text-gray-700 mb-2">
-                Años de experiencia *
-              </Text>
-              <TextInput
-                className="border border-gray-300 rounded-2xl px-4 py-3 bg-white"
-                placeholder="Ej: 3"
-                placeholderTextColor="#9CA3AF"
-                keyboardType="number-pad"
-                value={experienceYears}
-                onChangeText={setExperienceYears}
-                maxLength={2}
-              />
-            </View>
+            <Text className="text-xl font-bold mb-4">Seleccionar Especialidad</Text>
 
-            {/* Botones del modal */}
+            <ScrollView className="max-h-40 mb-4">
+              {specialties.map(spec => (
+                <TouchableOpacity
+                  key={spec.id}
+                  className={`p-3 rounded-xl mb-2 ${
+                    selectedSpecialty?.id === spec.id
+                      ? "bg-orange-100 border border-orange-500"
+                      : "bg-gray-100 border border-gray-200"
+                  }`}
+                  onPress={() => setSelectedSpecialty(spec)}
+                >
+                  <Text className={`font-medium ${
+                    selectedSpecialty?.id === spec.id ? "text-orange-700" : "text-gray-700"
+                  }`}>
+                    {spec.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <Text className="text-sm font-medium mb-2">Años de experiencia *</Text>
+            <TextInput
+              className="border border-gray-300 rounded-2xl px-4 py-3 mb-6"
+              placeholder="Ej: 3"
+              keyboardType="number-pad"
+              value={experienceYears}
+              onChangeText={setExperienceYears}
+            />
+
             <View className="flex-row space-x-3">
-              <TouchableOpacity 
+              <TouchableOpacity
                 className="flex-1 border border-gray-300 rounded-2xl py-3"
                 onPress={() => setShowSpecialtyModal(false)}
               >
-                <Text className="text-gray-700 text-center font-medium">Cancelar</Text>
+                <Text className="text-center text-gray-700">Cancelar</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
+
+              <TouchableOpacity
                 className="flex-1 bg-orange-500 rounded-2xl py-3"
-                onPress={handleAddSpecialty}
+                onPress={handleSetSpecialty}
               >
-                <Text className="text-white text-center font-medium">Agregar</Text>
+                <Text className="text-center text-white font-medium">Guardar</Text>
               </TouchableOpacity>
             </View>
+
           </View>
         </View>
       </Modal>
@@ -402,9 +342,4 @@ export default function TechnicianRegister() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-});
+const styles = StyleSheet.create({});

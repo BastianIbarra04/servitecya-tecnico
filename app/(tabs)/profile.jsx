@@ -14,6 +14,7 @@ export default function Profile({setIsLoggedIn}) {
   const router = useRouter();
   const { logout } = useAuth();
   const [user, setUser] = useState(null);
+  const [specialty, setSpecialty] = useState(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -23,7 +24,10 @@ export default function Profile({setIsLoggedIn}) {
           if (!id) return;
 
           const { data } = await axios.get(`${API_URL}/user/${id}`);
+          const specialtyRes  = await axios.get(`${API_URL}/tecSpecialty/${id}`);
           setUser(data);
+          setSpecialty(specialtyRes.data.specialties);
+
         } catch (error) {
           console.error(error);
           Alert.alert('Error', 'No se pudo obtener el usuario.');
@@ -31,12 +35,7 @@ export default function Profile({setIsLoggedIn}) {
       };
 
       fetchUser();
-
-      // opcional: limpiar algo cuando salgas de la pantalla
-      return () => {
-        // cleanup si lo necesitas
-      };
-    }, []) // 👈 importante: useCallback envuelve la función
+    }, [])
   );
 
   const handleLogout = async () => {
@@ -68,13 +67,18 @@ export default function Profile({setIsLoggedIn}) {
             <Text className="text-black text-lg font-medium mt-1 text-center mb-2">
               {user?.email}
             </Text>
-            
+            <View className="flex-row items-center bg-gray-200 px-4 py-2 rounded-full shadow-sm">
+              <FontAwesome name="wrench" size={18} color="black" style={{ marginRight: 8 }} />
+              <Text className="text-black text-lg font-medium text-center">
+                {specialty?.[0]?.name}
+              </Text>
+            </View>
           </View>
         </View>
 
 
         {/* Menú de opciones */}
-        <View className="px-6 mt-3">
+        <View className="px-6">
           <Text className="text-xl font-bold text-gray-900 mb-4">Mi Cuenta</Text>
           
           <View className="bg-white rounded-2xl shadow-sm overflow-hidden">
