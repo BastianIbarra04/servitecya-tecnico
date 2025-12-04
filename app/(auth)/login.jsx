@@ -21,46 +21,46 @@ export default function Login() {
     router.replace('/register'); // 👈 redirige a la pantalla de registro
   };
 
-const handleLogin = async () => {
-  if (!email || !password) {
-    Alert.alert('Error', 'Por favor completa todos los campos.');
-    return;
-  }
-
-  setLoading(true);
-  try {
-    const res = await axios.post(`${API_URL}/authTechnician/login`, { email, password });
-    const { user } = res.data || {};
-    if (!user) {
-      // fuerza el flujo de error para usar la misma lógica del catch
-      const error = new Error('INVALID_CREDENTIALS');
-      // @ts-ignore
-      error.response = { status: 401, data: { error: 'Credenciales inválidas' } };
-      throw error;
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Por favor completa todos los campos.');
+      return;
     }
 
-    await AsyncStorage.setItem('isLoggedIn', 'true');
-    await AsyncStorage.setItem('userId', String(user.id));
-    await AsyncStorage.setItem("technicianId", String(user.technicianId));
-    await login();
-  } catch (error) {
-    // Manejo claro por status
-    if (axios.isAxiosError(error)) {
-      const status = error.response?.status;
-      const msg = error.response?.data?.error;
-
-      if (status === 401 || status === 400) {
-        Alert.alert('Error', msg || 'Credenciales inválidas');
-      } else {
-        Alert.alert('Error', msg || 'No se pudo iniciar sesión.');
+    setLoading(true);
+    try {
+      const res = await axios.post(`${API_URL}/authTechnician/login`, { email, password });
+      const { user } = res.data || {};
+      if (!user) {
+        // fuerza el flujo de error para usar la misma lógica del catch
+        const error = new Error('INVALID_CREDENTIALS');
+        // @ts-ignore
+        error.response = { status: 401, data: { error: 'Credenciales inválidas' } };
+        throw error;
       }
-    } else {
-      Alert.alert('Error', 'Ocurrió un error inesperado.'+error.message);
+
+      await AsyncStorage.setItem('isLoggedIn', 'true');
+      await AsyncStorage.setItem('userId', String(user.id));
+      await AsyncStorage.setItem("technicianId", String(user.technicianId));
+      await login();
+    } catch (error) {
+      // Manejo claro por status
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const msg = error.response?.data?.error;
+
+        if (status === 401 || status === 400) {
+          Alert.alert('Error', msg || 'Credenciales inválidas');
+        } else {
+          Alert.alert('Error', msg || 'No se pudo iniciar sesión.');
+        }
+      } else {
+        Alert.alert('Error', 'Ocurrió un error inesperado.'+error.message);
+      }
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleFocus = (field) => {
     setIsFocused(prev => ({ ...prev, [field]: true }));
