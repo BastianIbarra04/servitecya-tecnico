@@ -20,6 +20,7 @@ export default function TechnicianOfferDetail() {
   const [technicianId, setTechnicianId] = useState(null);
   const [serviceDetails, setServiceDetails] = useState(null);
   const [realAddress, setRealAddress] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -33,13 +34,17 @@ export default function TechnicianOfferDetail() {
   }, [])
 );
 
-  useEffect(() => {
-    loadInitialData();
-  }, [offerId]);
+  useFocusEffect(
+    useCallback(() => {
+      loadInitialData();
+    }, [])
+  );
 
 const loadInitialData = async () => {
   try {
     const techId = await AsyncStorage.getItem('technicianId');
+    const userId = await AsyncStorage.getItem('userId');
+    setUserId(userId);
     setTechnicianId(techId);
     
     const offerRes = await axios.get(`${API_URL}/technician-offer/${offerId}`);
@@ -519,6 +524,9 @@ const loadInitialData = async () => {
             ) : null}
           </View>
         </View>
+        {/* Sección de Negociación - NO MOSTRAR SI ESTÁ RECHAZADO O ACEPTADO */}
+        {offer.status !== 'REJECTED' && offer.status !== 'ACCEPTED' && (
+          <>
         {/* Botones de Aceptar/Rechazar - SOLO SI ESTÁ PENDIENTE */}
         {isPending && offer.negotiationStatus === 'ACCEPTED' ? (
           <View className="bg-white rounded-xl border border-gray-200 mb-4 overflow-hidden shadow-sm">
@@ -711,8 +719,8 @@ const loadInitialData = async () => {
                 )}
               </View>
               
-              {/* Precios comparativos - Solo si hay negociación y NO está rechazada */}
-              {offer.negotiationStatus && offer.negotiationStatus !== 'ACCEPTED' ? (
+              {/* Precios comparativos - Solo si hay negociación activa (COUNTER_OFFER) */}
+              {offer.negotiationStatus === 'COUNTER_OFFER' ? (
                 <View className="space-y-3">
                   <View className="border-t border-gray-100 pt-3">
                     <Text className="text-sm font-medium text-gray-500 mb-2">Detalles de precios</Text>
@@ -798,12 +806,13 @@ const loadInitialData = async () => {
                         <FontAwesome name="user" size={16} color="#3B82F6" style={{marginTop: 2}} />
                         <View className="ml-2 flex-1">
                           <Text className="text-blue-800 font-medium text-sm">
-                            {offer.proposedBy !== Number(technicianId) 
-                              ? '📤 Tú hiciste esta propuesta' 
-                              : '📬 Te hicieron una propuesta'}
+                            {offer.proposedBy !== Number(userId)
+                              ? '📬 Te hicieron una propuesta'
+                              : '📤 Tú hiciste esta propuesta' 
+                            }
                           </Text>
                           <Text className="text-blue-600 text-xs mt-1">
-                            {offer.proposedBy !== Number(technicianId)
+                            {offer.proposedBy !== Number(userId)
                               ? 'Esperando respuesta de la contraparte...'
                               : 'Puedes aceptar o rechazar esta propuesta.'}
                           </Text>
@@ -812,90 +821,7 @@ const loadInitialData = async () => {
                     </View>
                   )}
                 </View>
-              ): (
-                <View className="space-y-3">
-                  <View className="border-t border-gray-100 pt-3">
-                    <Text className="text-sm font-medium text-gray-500 mb-2">Detalles de precios</Text>
-                    
-                    <View className="space-y-2">
-                      {/* Precio original de la oferta */}
-                      <View className="flex-row justify-between items-center p-2 bg-gray-50 rounded-lg">
-                        <View className="flex-row items-center">
-                          <FontAwesome name="tag" size={14} color="#6B7280" />
-                          <Text className="text-gray-600 ml-2 text-sm">Precio original</Text>
-                        </View>
-                        <Text className="text-gray-900 font-semibold">
-                          ${offer.originalPrice?.toLocaleString('es-CL') || '0'}
-                        </Text>
-                      </View>
-                      
-                      {/* Precio propuesto si existe */}
-                      {offer.price && (
-                        <View className="flex-row justify-between items-center p-2 bg-yellow-50 rounded-lg border border-yellow-100">
-                          <View className="flex-row items-center">
-                            <FontAwesome name="exchange" size={14} color="#F59E0B" />
-                            <Text className="text-yellow-800 ml-2 text-sm">Propuesta actual</Text>
-                          </View>
-                          <View className="flex-row items-center">
-                            <Text className="text-yellow-900 font-bold text-base">
-                              ${offer.price?.toLocaleString('es-CL') || '0'}
-                            </Text>
-                            {offer.originalPrice && offer.price !== offer.originalPrice && (
-                              <Text className={`text-xs ml-2 ${
-                                offer.price > offer.originalPrice ? 'text-red-500' : 'text-green-500'
-                              }`}>
-                                {offer.price > offer.originalPrice ? '▲' : '▼'} 
-                                {Math.abs(((offer.price - offer.originalPrice) / offer.originalPrice) * 100).toFixed(0)}%
-                              </Text>
-                            )}
-                          </View>
-                        </View>
-                      )}
-                      
-                      {/* Diferencia de precios */}
-                      {offer.price && offer.proposedPrice && offer.proposedPrice !== offer.price && (
-                        <View className={`p-2 rounded-lg ${
-                          offer.proposedPrice > offer.price ? 'bg-red-50' : 'bg-green-50'
-                        }`}>
-                          <View className="flex-row justify-between">
-                            <Text className={`text-sm font-medium ${
-                              offer.proposedPrice > offer.price ? 'text-red-700' : 'text-green-700'
-                            }`}>
-                              {offer.proposedPrice > offer.price ? 'Aumento' : 'Descuento'}
-                            </Text>
-                            <Text className={`font-bold ${
-                              offer.proposedPrice > offer.price ? 'text-red-700' : 'text-green-700'
-                            }`}>
-                              ${Math.abs(offer.proposedPrice - offer.price).toLocaleString('es-CL')}
-                            </Text>
-                          </View>
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                  
-                  {/* Información de quién propuso */}
-                  {offer.negotiationStatus === 'COUNTER_OFFER' && (
-                    <View className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                      <View className="flex-row items-start">
-                        <FontAwesome name="user" size={16} color="#3B82F6" style={{marginTop: 2}} />
-                        <View className="ml-2 flex-1">
-                          <Text className="text-blue-800 font-medium text-sm">
-                            {offer.proposedBy !== Number(technicianId) 
-                              ? '📤 Tú hiciste esta propuesta' 
-                              : '📬 Te hicieron una propuesta'}
-                          </Text>
-                          <Text className="text-blue-600 text-xs mt-1">
-                            {offer.proposedBy !== Number(technicianId)
-                              ? 'Esperando respuesta de la contraparte...'
-                              : 'Puedes aceptar o rechazar esta propuesta.'}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  )}
-                </View>
-              )}
+              ) : null}
               
               {/* Acciones disponibles */}
               <View className="border-t border-gray-100 pt-4 mt-4">
@@ -903,7 +829,7 @@ const loadInitialData = async () => {
                 
                 {offer.negotiationStatus === 'COUNTER_OFFER' && 
                 offer.proposedBy && 
-                offer.proposedBy === Number(technicianId) ? (
+                offer.proposedBy !== Number(userId) ? (
                   // Si hay propuesta y NO soy yo quien la hizo, puedo responder
                   <View className="space-y-2">
                     <TouchableOpacity 
@@ -967,6 +893,8 @@ const loadInitialData = async () => {
               )}
             </View>
           </View>
+        )}
+          </>
         )}
 
         {/* Mensaje de estado */}

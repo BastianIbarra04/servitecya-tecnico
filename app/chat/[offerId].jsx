@@ -583,6 +583,7 @@ export default function ChatScreen() {
 
             </View>
               )}
+              { offer.status !== 'ACCEPTED' && (
               <View className="px-4 py-2 border-t border-gray-300 bg-white">
                 {/* Botón abrir negociación */}
                 <TouchableOpacity
@@ -594,6 +595,7 @@ export default function ChatScreen() {
                   </Text>
                 </TouchableOpacity>
               </View>
+              )}
       {/* Input de Mensaje */}
       <View 
         style={{ paddingBottom: insets.bottom  }}
@@ -699,7 +701,7 @@ export default function ChatScreen() {
                 }`}
                 onPress={sendNegotiationOffer}
                 disabled={Number(negotiationPrice) <= 0}
-              >-
+              >
                 <Text className="text-white font-semibold text-center">Enviar</Text>
               </TouchableOpacity>
             </View>

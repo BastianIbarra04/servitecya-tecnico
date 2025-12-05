@@ -21,13 +21,17 @@ export default function Profile({setIsLoggedIn}) {
       const fetchUser = async () => {
         try {
           const id = await AsyncStorage.getItem('userId');
+          const technicianId = await AsyncStorage.getItem('technicianId');
           if (!id) return;
 
           const { data } = await axios.get(`${API_URL}/user/${id}`);
           const specialtyRes  = await axios.get(`${API_URL}/tecSpecialty/${id}`);
+          const ratingRes = await axios.get(`${API_URL}/technician/rating/${technicianId}`);
+          data.rating = ratingRes.data.averageRating;
+          data.totalReviews = ratingRes.data.totalReviews;
           setUser(data);
           setSpecialty(specialtyRes.data.specialties);
-
+          console.log(ratingRes.data);
         } catch (error) {
           console.error(error);
           Alert.alert('Error', 'No se pudo obtener el usuario.');
@@ -49,7 +53,7 @@ export default function Profile({setIsLoggedIn}) {
         className="flex-1"
       >
         {/* Header con gradiente */}
-        <View className="bg-gradient-to-b from-blue-600 to-blue-700 pt-8 pb-6 px-6">
+        <View className="bg-gradient-to-b from-blue-600 to-blue-700 pt-8 pb-4 px-6">
           <View className="items-center">
             {/* Avatar con badge online */}
             <View className="relative">
@@ -58,6 +62,24 @@ export default function Profile({setIsLoggedIn}) {
                 style={{ width: 120, height: 120 }}
                 className="rounded-full border-4 border-white"
               />
+            </View>
+
+            {/* Rating section */}
+            <View className="flex-row items-center mt-3">
+              <View className="flex-row">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <FontAwesome
+                    key={star}
+                    name={star <= Math.round(user?.rating || 0) ? "star" : "star-o"}
+                    size={18}
+                    color="#FBBF24"
+                    style={{ marginHorizontal: 2 }}
+                  />
+                ))}
+              </View>
+              <Text className="text-gray-600 text-sm ml-2">
+                {user?.rating?.toFixed(1) || '0.0'} ({user?.totalReviews || 0} reseñas)
+              </Text>
             </View>
             
             {/* Información del usuario */}
@@ -128,7 +150,7 @@ export default function Profile({setIsLoggedIn}) {
       </ScrollView>
 
       {/* Botón cerrar sesión fijo */}
-      <View className="px-6 pb-8 pt-4 bg-gray-50 border-t border-gray-200">
+      <View className="px-6 pt-4 bg-gray-50 border-t border-gray-200">
         <TouchableOpacity
           className="bg-white border border-gray-300 py-4 rounded-xl items-center justify-center shadow-sm flex-row"
           onPress={handleLogout}

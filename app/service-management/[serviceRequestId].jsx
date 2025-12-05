@@ -184,7 +184,13 @@ export default function CompleteService() {
     <View className="flex-1 bg-gray-50" style={{ paddingTop: insets.top }}>
       {/* Header */}
       <View className="bg-white px-6 py-4 border-b border-gray-200">
-        <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center">
+                    <TouchableOpacity 
+                      className="mr-3 p-2"
+                      onPress={() => router.back()}
+                    >
+                      <FontAwesome name="chevron-left" size={18} color="#374151" />
+                    </TouchableOpacity>
           <View>
             <Text className="text-2xl font-bold text-gray-900">Completar Servicio</Text>
             <Text className="text-gray-500 mt-1 text-base">

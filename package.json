@@ -20,6 +20,7 @@
     "expo": "~54.0.12",
     "expo-blur": "^15.0.7",
     "expo-build-properties": "~1.0.9",
+    "expo-checkbox": "~5.0.7",
     "expo-image-picker": "~17.0.8",
     "expo-location": "~19.0.7",
     "expo-router": "~6.0.10",

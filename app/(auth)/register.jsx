@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Platform, ScrollView, KeyboardAvoidingView, Modal } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Platform, ScrollView, KeyboardAvoidingView, Modal, TouchableWithoutFeedback } from 'react-native';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Checkbox from 'expo-checkbox'; // Importamos el checkbox
 
 export default function TechnicianRegister() {
   const [birthDate, setBirthDate] = useState(null);
@@ -21,6 +22,8 @@ export default function TechnicianRegister() {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false); // Estado para términos
+  const [showTermsModal, setShowTermsModal] = useState(false); // Modal para ver términos
 
   const [specialties, setSpecialties] = useState([]);
   const [selectedSpecialty, setSelectedSpecialty] = useState(null);
@@ -63,10 +66,13 @@ export default function TechnicianRegister() {
       return;
     }
 
+    if (!acceptedTerms) {
+      Alert.alert('Términos y Condiciones', 'Debes aceptar los términos y condiciones para continuar');
+      return;
+    }
+
     try {
       setLoading(true);
-
-      
 
       // Guardar datos
       await AsyncStorage.multiSet([
@@ -91,6 +97,15 @@ export default function TechnicianRegister() {
   };
 
   const goToLogin = () => router.replace('/login');
+
+  const handleOpenTerms = () => {
+    setShowTermsModal(true);
+  };
+
+  const handleAcceptTerms = () => {
+    setAcceptedTerms(true);
+    setShowTermsModal(false);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -263,23 +278,66 @@ export default function TechnicianRegister() {
                   <Text className="text-blue-600 font-medium mt-1">Seleccionar Especialidad</Text>
                 </TouchableOpacity>
               )}
+            </View>
 
+            {/* Checkbox de Términos y Condiciones */}
+            <View className="mt-4">
+              <View className="flex-row items-start bg-gray-50 rounded-2xl p-4">
+                <Checkbox
+                  style={styles.checkbox}
+                  value={acceptedTerms}
+                  onValueChange={setAcceptedTerms}
+                  color={acceptedTerms ? '#FF6600' : undefined}
+                />
+                <View className="flex-1 ml-3">
+                  <Text className="text-gray-700 text-sm">
+                    Acepto los{' '}
+                    <Text 
+                      className="text-orange-500 font-semibold"
+                      onPress={handleOpenTerms}
+                    >
+                      Términos y Condiciones
+                    </Text>
+                    {' '}y la{' '}
+                    <Text 
+                      className="text-orange-500 font-semibold"
+                      onPress={handleOpenTerms}
+                    >
+                      Política de Privacidad
+                    </Text>
+                  </Text>
+                  
+                  {!acceptedTerms && (
+                    <Text className="text-red-500 text-xs mt-1">
+                      * Debes aceptar los términos para continuar
+                    </Text>
+                  )}
+                </View>
+              </View>
             </View>
 
           </View>
 
           {/* Botón Registrar */}
           <TouchableOpacity
-            className={`w-full rounded-2xl py-4 mt-8 ${
-              !selectedSpecialty ? 'bg-orange-300' : 'bg-orange-500'
+            className={`w-full rounded-2xl py-4 mt-6 ${
+              !selectedSpecialty || !acceptedTerms ? 'bg-orange-300' : 'bg-orange-500'
             }`}
-            disabled={!selectedSpecialty}
+            disabled={!selectedSpecialty || !acceptedTerms}
             onPress={handleRegister}
           >
             <Text className="text-center text-white font-bold text-lg">
               {loading ? 'Procesando...' : 'Continuar'}
             </Text>
           </TouchableOpacity>
+
+          {/* Texto de Login */}
+          <View className="flex-row justify-center mt-6">
+            <Text className="text-gray-600">¿Ya tienes cuenta? </Text>
+            <TouchableOpacity onPress={goToLogin}>
+              <Text className="text-orange-500 font-semibold">Iniciar Sesión</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
 
@@ -287,7 +345,6 @@ export default function TechnicianRegister() {
       <Modal visible={showSpecialtyModal} animationType="slide" transparent={true}>
         <View className="flex-1 justify-center items-center bg-black/50 px-6">
           <View className="bg-white rounded-2xl p-6 w-full max-w-sm">
-
             <Text className="text-xl font-bold mb-4">Seleccionar Especialidad</Text>
 
             <ScrollView className="max-h-40 mb-4">
@@ -334,7 +391,230 @@ export default function TechnicianRegister() {
                 <Text className="text-center text-white font-medium">Guardar</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      </Modal>
+      {/* Modal de Términos y Condiciones */}
+      <Modal
+        visible={showTermsModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowTermsModal(false)}
+      >
+        {/* Contenedor que ocupa toda la pantalla: overlay + modal en la parte inferior */}
+        <View className="flex-1 justify-end">
+          {/* Fondo semitransparente (overlay). Al tocarlo, cierra modal */}
+          <TouchableWithoutFeedback onPress={() => setShowTermsModal(false)}>
+            <View className="absolute inset-0 bg-black/50" />
+          </TouchableWithoutFeedback>
 
+          {/* Caja blanca del modal */}
+          <View
+            className="bg-white rounded-t-3xl"
+            // altura fija relativa (más fiable que utilidades no soportadas)
+            style={{
+              height: '85%', // ocupa el 85% de la pantalla — ajústalo si quieres más o menos
+            }}
+          >
+            {/* Barra superior (drag handle) */}
+            <View className="items-center pt-3">
+              <View className="w-12 h-1.5 bg-gray-300 rounded-full" />
+            </View>
+
+            {/* Header */}
+            <View className="border-b border-gray-200 p-6">
+              <View className="flex-row justify-between items-center">
+                <Text className="text-xl font-bold text-gray-900">Términos y Condiciones</Text>
+                <TouchableOpacity onPress={() => setShowTermsModal(false)} className="p-2">
+                  <FontAwesome name="close" size={24} color="#6B7280" />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Contenido */}
+      <ScrollView className="flex-1 p-6" showsVerticalScrollIndicator={true}>
+        
+        <Text className="text-lg font-bold text-gray-900 mb-4">
+          TÉRMINOS Y CONDICIONES DE USO – SERVITECYA
+        </Text>
+
+        {/* Sección 1 */}
+        <View className="mb-4">
+          <Text className="font-semibold text-gray-800 mb-1">
+            1. Aceptación de los Términos
+          </Text>
+          <Text className="text-gray-600 text-sm leading-relaxed">
+            Al registrarse, acceder o utilizar la aplicación móvil ServitecYa,
+            el Usuario (cliente o técnico) acepta expresamente estos Términos y
+            Condiciones. Quien no esté de acuerdo deberá abstenerse de usar el servicio.
+          </Text>
+        </View>
+
+        {/* Sección 2 */}
+        <View className="mb-4">
+          <Text className="font-semibold text-gray-800 mb-1">
+            2. Naturaleza del Servicio
+          </Text>
+          <Text className="text-gray-600 text-sm leading-relaxed">
+            ServitecYa actúa únicamente como intermediario tecnológico,
+            facilitando la conexión entre usuarios que requieren servicios técnicos
+            y técnicos independientes que los ofrecen. ServitecYa no presta servicios
+            técnicos, no emplea a los técnicos y no garantiza la calidad del servicio realizado.
+          </Text>
+        </View>
+
+        {/* Sección 3 */}
+        <View className="mb-4">
+          <Text className="font-semibold text-gray-800 mb-1">
+            3. Registro de Usuario
+          </Text>
+          <Text className="text-gray-600 text-sm leading-relaxed">
+            Para utilizar la plataforma, el Usuario debe:{"\n\n"}
+            • Proporcionar información verdadera y verificable.{"\n"}
+            • Mantener la confidencialidad de su contraseña.{"\n"}
+            • Ser mayor de 18 años.{"\n\n"}
+            La plataforma puede suspender cuentas con actividad dudosa, uso indebido
+            o datos falsos.
+          </Text>
+        </View>
+
+        {/* Sección 4 */}
+        <View className="mb-4">
+          <Text className="font-semibold text-gray-800 mb-1">
+            4. Registro y Obligaciones del Técnico
+          </Text>
+          <Text className="text-gray-600 text-sm leading-relaxed">
+            El técnico debe:{"\n\n"}
+            • Proveer información real sobre su identidad, experiencia y certificaciones.{"\n"}
+            • Subir documentación válida cuando sea requerida.{"\n"}
+            • Cumplir los estándares mínimos de calidad y comportamiento profesional.{"\n"}
+            • Responder oportunamente a las solicitudes de los usuarios.{"\n\n"}
+            ServitecYa puede validar certificados, rechazar perfiles o revocar accesos
+            por incumplimiento.
+          </Text>
+        </View>
+
+        {/* Sección 5 */}
+        <View className="mb-4">
+          <Text className="font-semibold text-gray-800 mb-1">
+            5. Solicitud y Ejecución del Servicio
+          </Text>
+          <Text className="text-gray-600 text-sm leading-relaxed">
+            El Usuario publica una solicitud con descripción, ubicación e imágenes (opcional).{"\n"}
+            Los técnicos pueden aceptar, ignorar o rechazar solicitudes.{"\n"}
+            El Usuario recibe notificaciones del progreso.{"\n"}
+            El Técnico debe realizar el servicio cumpliendo lo acordado.{"\n"}
+            La plataforma no garantiza disponibilidad inmediata de técnicos.
+          </Text>
+        </View>
+
+        {/* Sección 6 */}
+        <View className="mb-4">
+          <Text className="font-semibold text-gray-800 mb-1">
+            6. Pagos
+          </Text>
+          <Text className="text-gray-600 text-sm leading-relaxed">
+            Los pagos se procesan mediante servicios externos certificados.{"\n"}
+            ServitecYa:{"\n\n"}
+            • No almacena datos bancarios.{"\n"}
+            • No es responsable por fallos del proveedor de pago.{"\n"}
+            • Puede cobrar comisiones por uso de la plataforma.{"\n\n"}
+            El costo final del servicio es informado antes de realizar el pago.
+          </Text>
+        </View>
+
+        {/* Sección 7 */}
+        <View className="mb-4">
+          <Text className="font-semibold text-gray-800 mb-1">
+            7. Calificaciones
+          </Text>
+          <Text className="text-gray-600 text-sm leading-relaxed">
+            Los usuarios pueden calificar y comentar la calidad del servicio.{"\n"}
+            ServitecYa podrá moderar o eliminar contenido ofensivo, fraudulento o no relacionado.
+          </Text>
+        </View>
+
+        {/* Sección 8 */}
+        <View className="mb-4">
+          <Text className="font-semibold text-gray-800 mb-1">
+            8. Prohibiciones
+          </Text>
+          <Text className="text-gray-600 text-sm leading-relaxed">
+            Queda estrictamente prohibido:{"\n\n"}
+            • Crear perfiles falsos o suplantar identidad.{"\n"}
+            • Utilizar la plataforma para actividades ilegales.{"\n"}
+            • Interferir con la operación del sistema.{"\n"}
+            • Agredir, insultar o acosar a otros usuarios o técnicos.{"\n\n"}
+            El incumplimiento puede resultar en suspensión definitiva.
+          </Text>
+        </View>
+
+        {/* Sección 9 */}
+        <View className="mb-4">
+          <Text className="font-semibold text-gray-800 mb-1">
+            9. Limitación de Responsabilidad
+          </Text>
+          <Text className="text-gray-600 text-sm leading-relaxed">
+            ServitecYa no se hace responsable por:{"\n\n"}
+            • Daños, pérdidas o perjuicios causados por técnicos.{"\n"}
+            • Información falsa entregada por usuarios o técnicos.{"\n"}
+            • Retrasos, fallas o interrupciones del servicio.{"\n"}
+            • Transacciones fallidas por problemas externos.{"\n\n"}
+            El Usuario acepta que contrata directamente con el Técnico.
+          </Text>
+        </View>
+
+        {/* Sección 10 */}
+        <View className="mb-4">
+          <Text className="font-semibold text-gray-800 mb-1">
+            10. Modificaciones
+          </Text>
+          <Text className="text-gray-600 text-sm leading-relaxed">
+            ServitecYa puede actualizar estos Términos en cualquier momento.
+            El uso continuo implica aceptación de los cambios.
+          </Text>
+        </View>
+
+        {/* Sección 11 */}
+        <View className="mb-12">
+          <Text className="font-semibold text-gray-800 mb-1">
+            11. Contacto
+          </Text>
+          <Text className="text-gray-600 text-sm leading-relaxed">
+            Para consultas:{"\n"}
+            📧 soporte@servitecya.cl{"\n"}
+            📍 Chile
+          </Text>
+        </View>
+
+      </ScrollView>
+
+            {/* Footer fijo: ocupamos la parte inferior con botones */}
+            <View
+              className="px-6 py-4 border-t border-gray-200"
+              // sombra pequeña opcional para separar del contenido
+              style={{
+                backgroundColor: 'white',
+              }}
+            >
+              <TouchableOpacity
+                className="bg-orange-500 rounded-2xl py-3"
+                onPress={handleAcceptTerms}
+              >
+                <Text className="text-center text-white font-bold text-lg">
+                  Aceptar Términos y Condiciones
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="border border-gray-300 rounded-2xl py-3 mt-3"
+                onPress={() => setShowTermsModal(false)}
+              >
+                <Text className="text-center text-gray-700 font-medium">
+                  Cancelar
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -342,4 +622,11 @@ export default function TechnicianRegister() {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  checkbox: {
+    margin: 4,
+    width: 22,
+    height: 22,
+    borderRadius: 4,
+  },
+});
